@@ -2,7 +2,7 @@ module github.com/cloudevents/sdk-go/protocol/amqp/v3
 
 go 1.23.0
 
-toolchain go1.24.2
+toolchain go1.23.8
 
 replace github.com/cloudevents/sdk-go/v2 => ../../../v2
 

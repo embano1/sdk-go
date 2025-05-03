@@ -14,8 +14,8 @@ import (
 // Option allows customization of the Protocol
 type Option func(*Protocol) error
 
-// WithConnOpt sets a connection option for amqp
-func WithConnOpt(opt amqp.ConnOptions) Option {
+// WithConnOptions sets connection options for amqp
+func WithConnOptions(opt amqp.ConnOptions) Option {
 	return func(t *Protocol) error {
 		t.connOpts = &opt
 		return nil
@@ -33,24 +33,24 @@ func WithConnSASLPlain(username, password string) Option {
 	}
 }
 
-// WithSessionOpt sets a session option for amqp
-func WithSessionOpt(opt amqp.SessionOptions) Option {
+// WithSessionOptions sets session options for amqp
+func WithSessionOptions(opt amqp.SessionOptions) Option {
 	return func(t *Protocol) error {
 		t.sessionOpts = &opt
 		return nil
 	}
 }
 
-// WithSenderLinkOption sets a sender option for amqp
-func WithSenderLinkOption(opt amqp.SenderOptions) Option {
+// WithSenderLinkOptions sets sender options for amqp
+func WithSenderLinkOptions(opt amqp.SenderOptions) Option {
 	return func(t *Protocol) error {
 		t.senderLinkOpts = append(t.senderLinkOpts, opt)
 		return nil
 	}
 }
 
-// WithReceiverLinkOption sets a receiver option for amqp
-func WithReceiverLinkOption(opt amqp.ReceiverOptions) Option {
+// WithReceiverLinkOptions sets receiver options for amqp
+func WithReceiverLinkOptions(opt amqp.ReceiverOptions) Option {
 	return func(t *Protocol) error {
 		t.receiverLinkOpts = append(t.receiverLinkOpts, opt)
 		return nil

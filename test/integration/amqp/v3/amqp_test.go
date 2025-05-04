@@ -7,35 +7,24 @@ package amqp
 
 import (
 	"context"
+	"os"
 	"testing"
-
-	"github.com/Azure/go-amqp"
 
 	"github.com/stretchr/testify/require"
 
-	protocolamqp "github.com/cloudevents/sdk-go/protocol/amqp/v3"
 	clienttest "github.com/cloudevents/sdk-go/v2/client/test"
 	"github.com/cloudevents/sdk-go/v2/event"
 	"github.com/cloudevents/sdk-go/v2/test"
-)
 
-func TestSendEvent(t *testing.T) {
-	test.EachEvent(t, test.Events(), func(t *testing.T, eventIn event.Event) {
-		eventIn = test.ConvertEventExtensionsToString(t, eventIn)
-		clienttest.SendReceive(t, func() interface{} {
-			return protocolFactory(t)
-		}, eventIn, func(e event.Event) {
-			test.AssertEventEquals(t, eventIn, test.ConvertEventExtensionsToString(t, e))
-		})
-	})
-}
+	protocolamqp "github.com/cloudevents/sdk-go/protocol/amqp/v3"
+)
 
 func TestSenderReceiverEvent(t *testing.T) {
 	test.EachEvent(t, test.Events(), func(t *testing.T, eventIn event.Event) {
 		eventIn = test.ConvertEventExtensionsToString(t, eventIn)
 		ctx := context.Background()
-		clienttest.SendReceive(t, func() interface{} {
-			return protocolFactory(ctx,t)
+		clienttest.SendReceive(t, func() any {
+			return protocolFactory(ctx, t)
 		}, eventIn, func(e event.Event) {
 			test.AssertEventEquals(t, eventIn, test.ConvertEventExtensionsToString(t, e))
 		})
@@ -43,29 +32,20 @@ func TestSenderReceiverEvent(t *testing.T) {
 }
 
 func protocolFactory(ctx context.Context, t *testing.T) *protocolamqp.Protocol {
-	conn, sess, queue := testClient(ctx, t)
+	t.Helper()
 
-	p, err := protocolamqp.NewProtocol(ctx,conn.)
+	const (
+		brokerEnvVar = "TEST_AMQP_URI"
+		queue        = "amqp-v3-integration-test"
+	)
+
+	server := os.Getenv(brokerEnvVar)
+	if server == "" {
+		t.Errorf("%q must be set", brokerEnvVar)
+	}
+
+	p, err := protocolamqp.NewProtocol(ctx, server, queue)
 	require.NoError(t, err)
 
 	return p
-}
-
-func testClient(ctx context.Context, t *testing.T) (*amqp.Conn, *amqp.Session, string) {
-	t.Helper()
-	addr := "test-queue"
-
-	s := os.Getenv("TEST_AMQP_URL")
-	if u, err := url.Parse(s); err == nil && u.Path != "" {
-		addr = u.Path
-	}
-
-	conn, err := amqp.Dial(ctx, s, nil)
-	if err != nil {
-		t.Skipf("ampq.Dial(%#v): %v", s, err)
-	}
-
-	session, err := conn.NewSession(ctx, &amqp.SessionOptions{})
-	require.NoError(t, err)
-	return conn, session, addr
 }

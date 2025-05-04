@@ -27,6 +27,10 @@ func (s *sender) Send(ctx context.Context, in binding.Message, transformers ...b
 	var sendOpts amqp.SendOptions
 
 	if m, ok := in.(*Message); ok { // Already an AMQP message.
+		/*if len(m.AMQP.Data) == 0 {
+			m.AMQP.Data = [][]byte{[]byte("hello")}
+		}*/
+
 		err = s.amqp.Send(ctx, m.AMQP, &sendOpts)
 		return err
 	}
@@ -37,6 +41,9 @@ func (s *sender) Send(ctx context.Context, in binding.Message, transformers ...b
 		return err
 	}
 
+	/*if len(amqpMessage.Data) == 0 {
+		amqpMessage.Data = [][]byte{[]byte("hello")}
+	}*/
 	err = s.amqp.Send(ctx, &amqpMessage, &sendOpts)
 	return err
 }

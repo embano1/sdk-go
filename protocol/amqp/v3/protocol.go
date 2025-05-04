@@ -73,48 +73,48 @@ func NewProtocol(ctx context.Context, server string, queue string, opts ...Optio
 
 // NewSenderProtocol creates a new sender-only amqp transport.
 func NewSenderProtocol(ctx context.Context, server string, queue string, opts ...Option) (*Protocol, error) {
-	t, err := initProtocol(ctx, server, queue, opts...)
+	p, err := initProtocol(ctx, server, queue, opts...)
 	if err != nil {
 		return nil, err
 	}
 
 	// Initialize sender link options if not set
-	if t.senderLinkOpts == nil {
-		t.senderLinkOpts = []amqp.SenderOptions{}
+	if p.senderLinkOpts == nil {
+		p.senderLinkOpts = []amqp.SenderOptions{}
 	}
 
 	// Setup sender
-	if err := t.setupSender(ctx); err != nil {
-		if t.ownedClient {
-			_ = t.conn.Close()
+	if err := p.setupSender(ctx); err != nil {
+		if p.ownedClient {
+			_ = p.conn.Close()
 		}
 		return nil, err
 	}
 
-	return t, nil
+	return p, nil
 }
 
 // NewReceiverProtocol creates a new receiver-only amqp transport.
 func NewReceiverProtocol(ctx context.Context, server string, queue string, opts ...Option) (*Protocol, error) {
-	t, err := initProtocol(ctx, server, queue, opts...)
+	p, err := initProtocol(ctx, server, queue, opts...)
 	if err != nil {
 		return nil, err
 	}
 
 	// Initialize receiver link options if not set
-	if t.receiverLinkOpts == nil {
-		t.receiverLinkOpts = []amqp.ReceiverOptions{}
+	if p.receiverLinkOpts == nil {
+		p.receiverLinkOpts = []amqp.ReceiverOptions{}
 	}
 
 	// Setup receiver
-	if err := t.setupReceiver(ctx); err != nil {
-		if t.ownedClient {
-			_ = t.conn.Close()
+	if err := p.setupReceiver(ctx); err != nil {
+		if p.ownedClient {
+			_ = p.conn.Close()
 		}
 		return nil, err
 	}
 
-	return t, nil
+	return p, nil
 }
 
 func (t *Protocol) Send(ctx context.Context, in binding.Message, transformers ...binding.Transformer) error {

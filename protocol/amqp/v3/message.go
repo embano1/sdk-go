@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"context"
 	"reflect"
+	"slices"
 	"strings"
 
 	"github.com/Azure/go-amqp"
@@ -110,11 +111,9 @@ func (m *Message) ReadBinary(ctx context.Context, encoder binding.BinaryWriter) 
 	}
 
 	data := m.getAmqpData()
-	if len(data) != 0 { // Some data
-		err = encoder.SetData(bytes.NewBuffer(data))
-		if err != nil {
-			return err
-		}
+	err = encoder.SetData(bytes.NewBuffer(data))
+	if err != nil {
+		return err
 	}
 	return nil
 }
@@ -147,9 +146,8 @@ func (m *Message) getAmqpData() []byte {
 	var data []byte
 	amqpData := m.AMQP.Data
 
-	// TODO: replace with slices.Concat once go mod bumped to 1.22
 	for idx := range amqpData {
-		data = append(data, amqpData[idx]...)
+		data = slices.Concat(data, amqpData[idx])
 	}
 	return data
 }

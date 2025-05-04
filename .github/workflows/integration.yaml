@@ -52,25 +52,7 @@ jobs:
           - 4223:4223
 
       amqp:
-        image: scholzj/qpid-dispatch
-        env:
-          QDROUTERD_CONFIG_OPTIONS: |
-            router {
-                mode: standalone
-                id: ZTg2NDQ0N2Q1YjU1OGE1N2NkNzY4NDFk
-                workerThreads: 4
-            }
-            log {
-                 module: DEFAULT
-                 enable: trace+
-                 timestamp: true
-            }
-            listener {
-                 role: normal
-                 host: 0.0.0.0
-                 port: amqp
-                 saslMechanisms: ANONYMOUS
-            }
+        image: bitnami/rabbitmq@sha256:e3adb8a61861a173312d5e1df6a5c211a3c6b5070b075fd31ae68c78906972ae # v4.1.0
         ports:
           - 5672:5672
       
@@ -91,5 +73,7 @@ jobs:
         id: go
         
       - name: Test
+        env:
+          TEST_AMQP_URI: "amqp://amqp"
         run: ./hack/integration-test.sh
 

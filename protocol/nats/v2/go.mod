@@ -8,7 +8,7 @@ replace github.com/cloudevents/sdk-go/v2 => ../../../v2
 
 require (
 	github.com/cloudevents/sdk-go/v2 v2.16.0
-	github.com/nats-io/nats.go v1.41.2
+	github.com/nats-io/nats.go v1.42.0
 )
 
 require (

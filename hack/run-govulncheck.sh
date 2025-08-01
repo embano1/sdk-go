@@ -32,14 +32,16 @@ for DIR in $GO_MOD_DIRS; do
     govulncheck ./... > "$TEMP_OUTPUT" 2>&1 || true
     
     # Extract the summary lines and format them
-    if grep -q "vulnerabilities from the Go standard library" "$TEMP_OUTPUT"; then
-        STDLIB_LINE=$(grep "vulnerabilities from the Go standard library" "$TEMP_OUTPUT")
+    if grep -q "vulnerabilities from the Go standard library\." "$TEMP_OUTPUT"; then
+        STDLIB_LINE=$(grep "vulnerabilities from the Go standard library\." "$TEMP_OUTPUT")
         echo "ℹ️ **Standard Library**: $STDLIB_LINE" >> "$OUTPUT_FILE"
         echo "" >> "$OUTPUT_FILE"
     fi
     
     if grep -q "This scan found no other vulnerabilities" "$TEMP_OUTPUT"; then
-        echo "✅ **Dependencies**: No vulnerabilities found in imported packages or required modules." >> "$OUTPUT_FILE"
+        # Extract the complete dependency summary (may span multiple lines)
+        DEP_SUMMARY=$(grep -A 2 "This scan found no other vulnerabilities" "$TEMP_OUTPUT" | tr '\n' ' ' | sed 's/  */ /g')
+        echo "✅ **Dependencies**: $DEP_SUMMARY" >> "$OUTPUT_FILE"
     elif grep -q "This scan also found" "$TEMP_OUTPUT"; then
         # Extract the complete multi-line summary
         DEP_SUMMARY=$(grep -A 2 "This scan also found" "$TEMP_OUTPUT" | tr '\n' ' ' | sed 's/  */ /g')

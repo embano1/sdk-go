@@ -1,8 +1,6 @@
 module github.com/cloudevents/sdk-go/samples/kafka_confluent
 
-go 1.24.3
-
-toolchain go1.24.11
+go 1.25.0
 
 replace github.com/cloudevents/sdk-go/v2 => ../../v2
 
@@ -11,7 +9,7 @@ replace github.com/cloudevents/sdk-go/protocol/kafka_confluent/v2 => ./../../pro
 require (
 	github.com/cloudevents/sdk-go/protocol/kafka_confluent/v2 v2.16.0
 	github.com/cloudevents/sdk-go/v2 v2.16.2
-	github.com/confluentinc/confluent-kafka-go/v2 v2.13.0
+	github.com/confluentinc/confluent-kafka-go/v2 v2.15.0
 )
 
 require (
@@ -20,5 +18,5 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/zap v1.27.1 // indirect
+	go.uber.org/zap v1.28.0 // indirect
 )
